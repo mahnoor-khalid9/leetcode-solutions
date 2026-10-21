@@ -1,48 +1,79 @@
 class Solution:
     def threeSum(self, nums: list[int]) -> list[list[int]]:
+
         def min_heapify(nums, i, n):
             smallest = i
-            left_node = 2*i+1
-            right_node = 2*i+2
-            if left_node < n and nums[i] > nums[left_node]:
-                smallest = left_node
-            if right_node< n and nums[smallest] > nums[right_node]:
-                smallest = right_node
+            left = 2 * i + 1
+            right = 2 * i + 2
+
+            if left < n and nums[left] < nums[smallest]:
+                smallest = left
+
+            if right < n and nums[right] < nums[smallest]:
+                smallest = right
+
             if smallest != i:
                 nums[i], nums[smallest] = nums[smallest], nums[i]
                 min_heapify(nums, smallest, n)
 
-
+        # Stage 1: Build min-heap
         n = len(nums)
-        for i in range ((n-1)//2, -1, -1):
+
+        for i in range(n // 2 - 1, -1, -1):
             min_heapify(nums, i, n)
 
-        sn = list()
-        for i in range(n-1, -1, -1):
-            sn.append(nums[0])
+        # Stage 2: Extract elements in sorted order
+        sorted_nums = []
+
+        while nums:
+            sorted_nums.append(nums[0])
             last_element = nums.pop()
-            
+
             if nums:
                 nums[0] = last_element
-                n = len(nums)
-                min_heapify(nums, 0, n)
+                min_heapify(nums, 0, len(nums))
 
+        # Stage 3: Find unique triplets
+        result = []
 
+        for i in range(len(sorted_nums) - 2):
 
-        list_ = set()
-        for i in range(len(sn)):
-            l = i+1
-            r = len(sn)-1
-            while l<r:
-                if sn[i] + sn[l] + sn[r] == 0:
-                    list_.add((sn[i], sn[l], sn[r]))
-                    l+=1
-                    r-=1
+            # Skip duplicate fixed elements
+            if i > 0 and sorted_nums[i] == sorted_nums[i - 1]:
+                continue
 
-                if sn[l] + sn[r] < -sn[i]:
-                    l += 1
+            left = i + 1
+            right = len(sorted_nums) - 1
 
-                if sn[l] + sn[r] > -sn[i]:
-                    r -= 1
+            while left < right:
+                current_sum = (
+                    sorted_nums[i]
+                    + sorted_nums[left]
+                    + sorted_nums[right]
+                )
 
-        return list(list_)
+                if current_sum == 0:
+                    result.append([
+                        sorted_nums[i],
+                        sorted_nums[left],
+                        sorted_nums[right]
+                    ])
+
+                    left += 1
+                    right -= 1
+
+                    # Skip duplicate left values
+                    while left < right and sorted_nums[left] == sorted_nums[left - 1]:
+                        left += 1
+
+                    # Skip duplicate right values
+                    while left < right and sorted_nums[right] == sorted_nums[right + 1]:
+                        right -= 1
+
+                elif current_sum < 0:
+                    left += 1
+
+                else:
+                    right -= 1
+
+        return result
