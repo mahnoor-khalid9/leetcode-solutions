@@ -19,8 +19,5 @@ class Solution:
         for i in range(len(height)):
             area += min(left_max[i], right_max[i]) - height[i]
 
-
-        print(left_max, right_max)
-
         return area
                 
