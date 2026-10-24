@@ -4,7 +4,7 @@ class Solution:
         nums.sort()
         n = len(nums)
 
-        quad_list = set()
+        quad_list = list()
         for i in range(n-3):
             if i > 0 and nums[i] == nums[i - 1]:
                 continue
@@ -29,8 +29,15 @@ class Solution:
                         right -= 1
                     
                     elif current_sum == target:
-                        quad_list.add((nums[i], nums[j], nums[left], nums[right]))
+                        quad_list.append([nums[i], nums[j], nums[left], nums[right]])
                         left+=1
                         right-=1
 
-        return [list(quad) for quad in quad_list]
+                        while left < right and nums[left] == nums[left - 1]:
+                            left += 1
+
+                        while left < right and nums[right] == nums[right + 1]:
+                            right -= 1
+                            
+
+        return quad_list
